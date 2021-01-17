@@ -75,11 +75,13 @@ func main() {
 			if err = db.store(entry); err != nil {
 				http.Error(w, err.Error(), http.StatusBadRequest)
 				log.Printf("Error storing new entry: %v", err)
+				return
 			}
 
 			if !peopleDb.hasTeam(entry.Team) {
 				if err = peopleDb.store(peopleRecord{Team: entry.Team}); err != nil {
 					log.Printf("Error saving team %q: %v", entry.Team, err)
+					return
 				}
 			}
 		}
