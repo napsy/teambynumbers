@@ -11,7 +11,8 @@ Create dummy database:
 
 ```bash
 mkdir db
-cp example.csv db/reports.csv
+cp reports_example.csv db/reports.csv
+cp peole_example.csv db/people.csv
 ```
 
 Compile (requires go1.15 or newer) and create a docker image:
@@ -28,4 +29,4 @@ docker-compose up
 
 You should now be able to visit http://localhost:8888
 
-You can export data by accessing ``/api/v1/export``.
+You can export data by accessing ``/api/v1/reports``.
