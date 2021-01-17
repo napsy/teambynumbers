@@ -89,6 +89,17 @@ func main() {
 			w.Write(out)
 		}
 	})
+	http.HandleFunc("/api/v1/teams", func(w http.ResponseWriter, r *http.Request) {
+		switch r.Method {
+		case "GET":
+			out, err := json.Marshal(peopleDb.teams())
+			if err != nil {
+				http.Error(w, err.Error(), http.StatusBadRequest)
+				return
+			}
+			w.Write(out)
+		}
+	})
 	// Support prometheus metrics
 	http.Handle("/api/v1/metrics", promhttp.Handler())
 	log.Panic(http.ListenAndServe(":8888", nil))

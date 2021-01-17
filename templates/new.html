@@ -10,6 +10,11 @@
   src="https://code.jquery.com/jquery-3.5.1.min.js"
   integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0="
   crossorigin="anonymous"></script>
+<script
+  src="https://code.jquery.com/ui/1.12.0/jquery-ui.min.js"
+  integrity="sha256-eGE6blurk5sHj+rmkfsGYeKyZx3M4bG+ZlFyA7Kns7E="
+  crossorigin="anonymous"></script>
+
 <style>
 body {
 	margin: 0px !important;
@@ -84,9 +89,39 @@ function submit() {
 		})
 };
 
+function uniq(a) {
+	return a.sort().filter(function(item, pos, ary) {
+		return !pos || item != ary[pos - 1];
+	});
+}
+
 window.onload = function() {
 	$('#error-window').css("display", "none");
 	$('#ok-window').css("display", "none");
+
+	$.ajax ({
+		type: "GET",
+		//the url where you want to sent the userName and password to
+		url: '/api/v1/teams',
+		contentType : 'application/json',
+		dataType: "json",
+		async: false,
+		//json object to sent to the authentication url
+		success: function (data) {
+			$('#error-window').css("display", "none");
+			$('#teams').autocomplete({
+				source: data 
+			});
+			var str = '( ';
+			data.forEach(el => { str += el+' ' });
+			str += ')';
+			$('#team-list').html(str);
+		},
+		error: function(e) {
+			$('#error-message').html("There was an error fetching list of teams, the server returned:<p><br>" + "<code>"+e.responseText+"</code></p>");
+			$('#error-window').css("display", "block");
+		}
+	})
 };
 </script>
 <title>TeamByNumbers</title>
@@ -105,6 +140,7 @@ window.onload = function() {
 			  <div>Success!</div>
 			</div>
 			<label class="label">Team</label>
+			<div id="team-list" style="font-size: small;"></div>
 			<input id="team" class="input" type="text" placeholder="short, e.g. JIRA names" />
 			<label class="label">Member count</label>
 			<input id="members" class="input" type="text" placeholder="how many people participated" />
