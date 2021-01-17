@@ -48,6 +48,16 @@ func newPeopleDB(filename string) (*peopleDb, error) {
 	return db, nil
 }
 
+func (db *peopleDb) hasTeam(team string) bool {
+	teams := db.teams()
+	for i := range teams {
+		if teams[i] == team {
+			return true
+		}
+	}
+	return false
+}
+
 func (db *peopleDb) load(f io.Reader) error {
 	entries := []peopleRecord{}
 

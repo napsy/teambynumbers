@@ -108,9 +108,10 @@ window.onload = function() {
 			$('#teams').autocomplete({
 				source: data 
 			});
-			var str = '( ';
-			data.forEach(el => { str += el+' ' });
-			str += ')';
+				var str = '<i>known teams: <b>';
+			data.forEach(el => { str += el+', ' });
+				str = str.slice(0, -2);
+				str += '</b></i>';
 			$('#team-list').html(str);
 		},
 		error: function(e) {
@@ -136,7 +137,7 @@ window.onload = function() {
 			  <div>Success!</div>
 			</div>
 			<label class="label">Team</label>
-			<div id="team-list" style="font-size: small;"></div>
+			<div id="team-list" style="padding: 4px; font-size: small;"></div>
 			<input id="team" class="input" type="text" placeholder="short, e.g. JIRA names" />
 			<label class="label">Member count</label>
 			<input id="members" class="input" type="text" placeholder="how many people participated" />

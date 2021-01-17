@@ -76,6 +76,12 @@ func main() {
 				http.Error(w, err.Error(), http.StatusBadRequest)
 				log.Printf("Error storing new entry: %v", err)
 			}
+
+			if !peopleDb.hasTeam(entry.Team) {
+				if err = peopleDb.store(peopleRecord{Team: entry.Team}); err != nil {
+					log.Printf("Error saving team %q: %v", entry.Team, err)
+				}
+			}
 		}
 	})
 	http.HandleFunc("/api/v1/people", func(w http.ResponseWriter, r *http.Request) {
