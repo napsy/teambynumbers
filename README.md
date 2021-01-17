@@ -1,6 +1,6 @@
 # teambynumbers
 
-This is a tool I'm using to track my team.
+This is a tool I'm using to track my team. It uses CSV files for database and it's ment to be used with chart software (e.g. grafana) to plot the data.
 
 ![Index page](screenshots/shot1.png)
 
