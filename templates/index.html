@@ -1,0 +1,94 @@
+<html>
+	<head>
+    <meta charset="utf-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.1/css/bulma.min.css">
+		<style>
+body {
+	margin: 0px !important;
+}
+
+#banner {
+	width: 100%;
+	color: white;
+	padding: 20px;
+	height: 140px;
+	background: #44464f;
+	font-size: 50px;
+	text-align: center;
+
+}
+#content {
+	margin: auto !important;
+	margin-top: 50px !important;
+	width: 600px !important;
+	padding: 30px !important;
+	background: #e1eff4;
+	border-radius: 15px;
+}
+</style>
+<title>TeamByNumbers</title>
+	</head>
+<script type="text/javascript">
+function newReport() {
+		window.location.href="/new";
+};
+</script>
+	<body>
+		<div id="banner"><a href="/"><span style="color: red; font-weight: bold;">team</span><span style="">by</span><span style="color: grey; font-weight:
+				 bold;">numbers</span></a></div>
+		<div id="content">
+			<h1 class="title">Submitted Team Reports</h1>
+			<p class="subtitle">This is a list of past team reports. To add a new report, click on the 'Add new report' button.</p>
+			<div class="control">
+				<button class="button is-link" onclick="newReport()">Add new report</button>
+			</div>
+			<br><br>
+			<table class="table">
+  <thead>
+    <tr>
+      <th><abbr title="Local date">Date</abbr></th>
+      <th>Team</th>
+      <th><abbr title="Member count">N</abbr></th>
+      <th><abbr title="Cycle time">Cycle</abbr></th>
+      <th><abbr title="Lead time">Lead</abbr></th>
+      <th><abbr title="Deploys">D</abbr></th>
+      <th><abbr title="Quality score, where lower is better. Negative numbers mean that bugs were reported but nothing was fixed.">Quality</abbr></th>
+      <th><abbr title="Value delivered">Value</abbr></th>
+    </tr>
+  </thead>
+  <tfoot>
+    <tr>
+      <th><abbr title="Local date">Date</abbr></th>
+      <th>Team</th>
+      <th><abbr title="Member count">N</abbr></th>
+      <th><abbr title="Cycle time">Cycle</abbr></th>
+      <th><abbr title="Lead time">Lead</abbr></th>
+      <th><abbr title="Deploys">D</abbr></th>
+      <th><abbr title="Quality score, where lower is better. Negative numbers mean that bugs were reported but nothing was fixed.">Quality</abbr></th>
+      <th><abbr title="Value delivered">Value</abbr></th>
+    </tr>
+  </tfoot>
+  <tbody>
+{{ range . }}
+    <tr>
+		<td><a href="{{ .ReportURL }}">{{ .Date }}</a></td>
+		<td>{{ .Team }}</td>
+		<td>{{ .MemberCount }}</td>
+		<td>{{ .CycleTime }}</td>
+		<td>{{ .LeadTime }}</td>
+		<td>{{ .DeployCount }}</td>
+		<td>{{ printf "%.2f" .QualityScore }}</td>
+		<td>{{ printf "%.2f" .ValueScore }}</td>
+    </tr>
+{{ end }}
+  </tbody>
+			</table>
+
+
+		</div>
+	</body>
+</html>

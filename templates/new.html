@@ -1,0 +1,128 @@
+<html>
+	<head>
+    <meta charset="utf-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.1/css/bulma.min.css">
+		<style>
+body {
+	margin: 0px !important;
+}
+
+#banner {
+	width: 100%;
+	color: white;
+	padding: 20px;
+	height: 140px;
+	background: #44464f;
+	font-size: 50px;
+	text-align: center;
+
+}
+#content {
+	margin: auto !important;
+	margin-top: 50px !important;
+	width: 600px !important;
+	padding: 30px !important;
+	background: #e1eff4;
+	border-radius: 15px;
+}
+</style>
+<script type="text/javascript">
+function cancel() {
+	window.location.href = '/';
+};
+
+function submit() {
+	var eTeam         = document.getElementById("team").value,
+		eMembers      = document.getElementById("members").value,
+		eCycle        = document.getElementById("cycle").value,
+		eLead         = document.getElementById("lead").value,
+		eBugsReported = document.getElementById("bugs-reported").value,
+		eBugsSquashed = document.getElementById("bugs-squashed").value,
+		eValue        = document.getElementById("value").value,
+		eReport       = document.getElementById("report").value,
+		eDeploys      = document.getElementById("deploys").value;
+
+		var xmlhttp = new XMLHttpRequest();   // new HttpRequest instance
+		xmlhttp.open("POST", "/api/v1/entry");
+		xmlhttp.setRequestHeader("Content-Type", "application/json");
+		xmlhttp.onreadystatechange = function() {
+			if (this.readyState == 3 && this.status == 400) {
+				document.getElementById("error-message").innerHTML = "There was an error submitting your report, the server returned:<p><br>" +
+						"<code>"+this.responseText+"</code></p>";
+				document.getElementById("error-window").style.display = "block";
+			} else if (this.status == 200) {
+				document.getElementById("error-window").style.display = "none";
+				document.getElementById("ok-window").style.display = "block";
+				setTimeout(function() {
+					window.location.href = '/';
+				}, 1000);
+			}
+		};
+		xmlhttp.send(JSON.stringify({
+				Team:eTeam,
+				MemberCount: parseInt(eMembers, 10),
+				CycleTime: parseInt(eCycle, 10),
+				LeadTime: parseInt(eLead, 10),
+				BugsReported: parseInt(eBugsReported, 10),
+				BugsSquashed: parseInt(eBugsSquashed, 10),
+				DeployCount: parseInt(eDeploys, 10),
+				ValueScore: parseFloat(eValue),
+				ReportURL: eReport
+		}));
+};
+
+window.onload = function() {
+	document.getElementById("error-window").style.display = "none";
+	document.getElementById("ok-window").style.display = "none";
+};
+</script>
+<title>TeamByNumbers</title>
+	</head>
+	<body>
+		<div id="banner"><a href="/"><span style="color: red; font-weight: bold;">team</span><span style="">by</span><span style="color: grey; font-weight:
+				 bold;">numbers</span></a></div>
+		<div id="content">
+			<h1 class="title">New Report</h1>
+			<p class="subtitle">Well done! You're ready to add new team stats.</p>
+
+			<div id="error-window" class="notification is-danger">
+				 <div id="error-message"></div>
+			</div>
+			<div id="ok-window" class="notification is-success">
+			  <div>Success!</div>
+			</div>
+			<label class="label">Team</label>
+			<input id="team" class="input" type="text" placeholder="short, e.g. JIRA names" />
+			<label class="label">Member count</label>
+			<input id="members" class="input" type="text" placeholder="how many people participated" />
+			<label class="label">Cycle time</label>
+			<input id="cycle" class="input" type="text" placeholder="average time a task spent in WIP lane" />
+			<label class="label">Lead time</label>
+			<input id="lead" class="input" type="text" placeholder="number of done tasks in this period"/>
+			<label class="label">Bugs reported <span style="font-size: small;"><i>(optional)</i></span></label>
+			<input id="bugs-reported" class="input" type="text" placeholder="will be set to 0 if empty" />
+			<label class="label">Bugs squashed <span style="font-size: small;"><i>(optional)</i></span></label>
+			<input id="bugs-squashed" class="input" type="text" placeholder="will be set to 0 if empty"/>
+			<label class="label">Deploy count <span style="font-size: small;"><i>(optional)</i></span></label>
+			<input id="deploys" class="input" type="text" placeholder="number of deploys made to production"/>
+			<label class="label">Value score <span style="font-size: small;"><i>(optional)</i></span></label>
+			<input id="value" class="input" type="text" placeholder="will be set to 0 if empty"/>
+			<label class="label">Report URL <span style="font-size: small;"><i>(optional)</i></span></label>
+			<input id="report" class="input" type="text" placeholder="URL for a full report document" /><br>
+			<br><br>
+			<div class="field is-grouped">
+				<div class="control">
+					<button class="button is-link" onclick="submit()" >Submit</button>
+				</div>
+				<div class="control">
+					<button class="button is-link is-light" onclick="cancel()">Cancel</button>
+				</div>
+			</div>
+		</div>
+	</body>
+
+</html>

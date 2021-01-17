@@ -1,0 +1,9 @@
+version: "3.3"
+services:
+  teambynumbers:
+    build: .
+    image: teambynumbers
+    volumes:
+      - ./db:/db
+    ports:
+      - "8888:8888"
