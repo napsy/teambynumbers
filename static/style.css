@@ -1,0 +1,23 @@
+body {
+	margin: 0px !important;
+}
+
+#banner {
+	width: 100%;
+	color: white;
+	padding: 20px;
+	height: 140px;
+	background: #44464f;
+	font-size: 50px;
+	text-align: center;
+
+}
+#content {
+	margin: auto !important;
+	margin-top: 50px !important;
+	width: 600px !important;
+	padding: 30px !important;
+	background: #e1eff4;
+	border-radius: 15px;
+}
+

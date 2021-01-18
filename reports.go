@@ -20,8 +20,8 @@ type statEntry struct {
 	Date         string
 	Team         string
 	MemberCount  int
-	CycleTime    int
-	LeadTime     int
+	CycleTime    float64
+	LeadTime     float64
 	BugsReported int
 	BugsSquashed int
 	DeployCount  int
@@ -73,10 +73,10 @@ func (db *recordDb) load(f io.Reader) error {
 		if entry.MemberCount, err = strconv.Atoi(record[3]); err != nil {
 			log.Printf("Unable to convert member count %q to number: %v", record[3], err)
 		}
-		if entry.CycleTime, err = strconv.Atoi(record[4]); err != nil {
+		if entry.CycleTime, err = strconv.ParseFloat(record[4], 64); err != nil {
 			log.Printf("Unable to convert cycle time %q to number: %v", record[4], err)
 		}
-		if entry.LeadTime, err = strconv.Atoi(record[5]); err != nil {
+		if entry.LeadTime, err = strconv.ParseFloat(record[5], 64); err != nil {
 			log.Printf("Unable to convert lead time %q to number: %v", record[5], err)
 		}
 		if entry.BugsReported, err = strconv.Atoi(record[6]); err != nil {
@@ -145,7 +145,7 @@ func (db *recordDb) store(entry statEntry) error {
 	defer csvfile.Close()
 
 	for i := range db.records {
-		record := fmt.Sprintf("%d,%s,%s,%d,%d,%d,%d,%d,%d,%.2f,%s\n", db.records[i].Version, db.records[i].Date, db.records[i].Team, db.records[i].MemberCount, db.records[i].CycleTime, db.records[i].LeadTime, db.records[i].BugsReported, db.records[i].BugsSquashed, db.records[i].DeployCount, db.records[i].ValueScore, db.records[i].ReportURL)
+		record := fmt.Sprintf("%d,%s,%s,%d,%.2f,%.2f,%d,%d,%d,%.2f,%s\n", db.records[i].Version, db.records[i].Date, db.records[i].Team, db.records[i].MemberCount, db.records[i].CycleTime, db.records[i].LeadTime, db.records[i].BugsReported, db.records[i].BugsSquashed, db.records[i].DeployCount, db.records[i].ValueScore, db.records[i].ReportURL)
 		csvfile.Write([]byte(record))
 	}
 	csvfile.Sync()

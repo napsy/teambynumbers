@@ -14,37 +14,33 @@
   src="https://code.jquery.com/ui/1.12.0/jquery-ui.min.js"
   integrity="sha256-eGE6blurk5sHj+rmkfsGYeKyZx3M4bG+ZlFyA7Kns7E="
   crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="/static/style.css">
 
-<style>
-body {
-	margin: 0px !important;
-}
-
-#banner {
-	width: 100%;
-	color: white;
-	padding: 20px;
-	height: 140px;
-	background: #44464f;
-	font-size: 50px;
-	text-align: center;
-
-}
-#content {
-	margin: auto !important;
-	margin-top: 50px !important;
-	width: 600px !important;
-	padding: 30px !important;
-	background: #e1eff4;
-	border-radius: 15px;
-}
-</style>
 <script type="text/javascript">
-function cancel() {
+function cancelClicked() {
 	window.location.href = '/';
 };
 
-function submit() {
+function displayOk(message) {
+	hideError(); // we can't display both messages
+	$('#ok-window').css("display", "block");
+};
+
+function displayError(message) {
+	hideOk(); // we can't display both messages
+	$('#error-message').html("There was an error fetching list of teams, the server returned:<p><br>" + "<code>"+message+"</code></p>");
+	$('#error-window').css("display", "block");
+};
+
+function hideError() {
+	$('#error-window').css("display", "none");
+};
+
+function hideOk() {
+	$('#ok-window').css("display", "none");
+};
+
+function submitClicked() {
 	var eTeam         = $('#team').val(),
 		eMembers      = $('#members').val(),
 		eCycle        = $('#cycle').val(),
@@ -55,48 +51,36 @@ function submit() {
 		eReport       = $('#report').val(),
 		eDeploys      = $('#deploys').val();
 
-		var data = JSON.stringify({
-				Team:eTeam,
-				MemberCount: parseInt(eMembers, 10),
-				CycleTime: parseInt(eCycle, 10),
-				LeadTime: parseInt(eLead, 10),
-				BugsReported: parseInt(eBugsReported, 10),
-				BugsSquashed: parseInt(eBugsSquashed, 10),
-				DeployCount: parseInt(eDeploys, 10),
-				ValueScore: parseFloat(eValue),
-				ReportURL: eReport
-		});
+	var data = JSON.stringify({
+			Team:         eTeam,
+			MemberCount:  parseInt(eMembers, 10),
+			CycleTime:    parseFloat(eCycle),
+			LeadTime:     parseFloat(eLead),
+			BugsReported: parseInt(eBugsReported, 10),
+			BugsSquashed: parseInt(eBugsSquashed, 10),
+			DeployCount:  parseInt(eDeploys, 10),
+			ValueScore:   parseFloat(eValue),
+			ReportURL:    eReport
+	});
 
-		$.ajax ({
-			type: "POST",
-			url: '/api/v1/reports',
-			contentType : 'application/json',
-			async: false,
-			data: data,
-			success: function () {
-				$('#error-window').css("display", "none");
-				$('#ok-window').css("display", "block");
-				setTimeout(function() {
-					window.location.href = '/';
-				}, 1000);
-			},
-			error: function(e) {
-				$('#error-message').html("There was an error submitting your report, the server returned:<p><br>" + "<code>"+e.responseText+"</code></p>");
-				$('#error-window').css("display", "block");
-			}
-		})
+	$.ajax ({
+		type: "POST",
+		url: '/api/v1/reports',
+		contentType : 'application/json',
+		async: false,
+		data: data,
+		success: function () {
+			displayOk();
+			setTimeout(function() { window.location.href = '/'; }, 1000);
+		},
+		error: function(e) {
+			displayError(e.responseText);
+		}
+	})
 };
 
-function uniq(a) {
-	return a.sort().filter(function(item, pos, ary) {
-		return !pos || item != ary[pos - 1];
-	});
-}
-
-window.onload = function() {
-	$('#error-window').css("display", "none");
-	$('#ok-window').css("display", "none");
-
+$(function() {
+	// Fetch the list of known teams
 	$.ajax ({
 		type: "GET",
 		url: '/api/v1/teams',
@@ -104,22 +88,21 @@ window.onload = function() {
 		dataType: "json",
 		async: false,
 		success: function (data) {
-			$('#error-window').css("display", "none");
+			hideError();
 			$('#teams').autocomplete({
 				source: data 
 			});
-				var str = '<i>known teams: <b>';
+			var str = '<i>known teams: <b>';
 			data.forEach(el => { str += el+', ' });
-				str = str.slice(0, -2);
-				str += '</b></i>';
+			str = str.slice(0, -2);
+			str += '</b></i>';
 			$('#team-list').html(str);
 		},
 		error: function(e) {
-			$('#error-message').html("There was an error fetching list of teams, the server returned:<p><br>" + "<code>"+e.responseText+"</code></p>");
-			$('#error-window').css("display", "block");
+			displayError(e.responseText);
 		}
 	})
-};
+});
 </script>
 <title>TeamByNumbers</title>
 	</head>
@@ -130,10 +113,10 @@ window.onload = function() {
 			<h1 class="title">New Report</h1>
 			<p class="subtitle">Well done! You're ready to add new team stats.</p>
 
-			<div id="error-window" class="notification is-danger">
+			<div id="error-window" class="notification is-danger" style="display: none;">
 				 <div id="error-message"></div>
 			</div>
-			<div id="ok-window" class="notification is-success">
+			<div id="ok-window" class="notification is-success" style="display: none;">
 			  <div>Success!</div>
 			</div>
 			<label class="label">Team</label>
@@ -141,9 +124,9 @@ window.onload = function() {
 			<input id="team" class="input" type="text" placeholder="short, e.g. JIRA names" />
 			<label class="label">Member count</label>
 			<input id="members" class="input" type="text" placeholder="how many people participated" />
-			<label class="label">Cycle time</label>
+			<label class="label">Cycle time (days)</label>
 			<input id="cycle" class="input" type="text" placeholder="average time a task spent in WIP lane" />
-			<label class="label">Lead time</label>
+			<label class="label">Lead time (tasks/week)</label>
 			<input id="lead" class="input" type="text" placeholder="number of done tasks in this period"/>
 			<label class="label">Bugs reported <span style="font-size: small;"><i>(optional)</i></span></label>
 			<input id="bugs-reported" class="input" type="text" placeholder="will be set to 0 if empty" />
@@ -158,10 +141,10 @@ window.onload = function() {
 			<br><br>
 			<div class="field is-grouped">
 				<div class="control">
-					<button class="button is-link" onclick="submit()" >Submit</button>
+					<button class="button is-link" onclick="submitClicked()" >Submit</button>
 				</div>
 				<div class="control">
-					<button class="button is-link is-light" onclick="cancel()">Cancel</button>
+					<button class="button is-link is-light" onclick="cancelClicked()">Cancel</button>
 				</div>
 			</div>
 		</div>

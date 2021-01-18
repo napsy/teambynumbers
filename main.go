@@ -110,5 +110,8 @@ func main() {
 	})
 	// Support prometheus metrics
 	http.Handle("/api/v1/metrics", promhttp.Handler())
+
+	fs := http.FileServer(http.Dir("./static"))
+	http.Handle("/static/", http.StripPrefix("/static/", fs))
 	log.Panic(http.ListenAndServe(":8888", nil))
 }
