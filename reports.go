@@ -7,11 +7,13 @@ import (
 	"io"
 	"log"
 	"os"
+	"sort"
 	"strconv"
+	"time"
 )
 
 type recordDb struct {
-	records  []statEntry
+	records  statRecord
 	filename string
 }
 
@@ -28,8 +30,22 @@ type statEntry struct {
 	ValueScore   float64
 	ReportURL    string
 
-	// Not exported
 	QualityScore float64
+	date         time.Time
+}
+
+type statRecord []statEntry
+
+func (s statRecord) Len() int {
+	return len(s)
+}
+
+func (s statRecord) Less(i, j int) bool {
+	return s[i].date.After(s[j].date)
+}
+
+func (s statRecord) Swap(i, j int) {
+	s[i], s[j] = s[j], s[i]
 }
 
 func newRecordDB(filename string) (*recordDb, error) {
@@ -97,9 +113,16 @@ func (db *recordDb) load(f io.Reader) error {
 			entry.QualityScore = float64(-entry.BugsReported)
 		}
 
+		date, err := time.Parse("2006/01/02", entry.Date)
+		if err != nil {
+			log.Printf("Unable to parse date %q: %v", entry.Date, err)
+		}
+		entry.date = date
 		entries = append(entries, entry)
 	}
+
 	db.records = entries
+	sort.Sort(db.records)
 	return nil
 }
 

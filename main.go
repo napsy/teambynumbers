@@ -7,16 +7,7 @@ import (
 	"text/template"
 	"time"
 
-	"github.com/prometheus/client_golang/prometheus"
-	"github.com/prometheus/client_golang/prometheus/promauto"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
-)
-
-var (
-	opsProcessed = promauto.NewGauge(prometheus.GaugeOpts{
-		Name: "myapp_processed_ops_total",
-		Help: "The total number of processed events",
-	})
 )
 
 func main() {
@@ -30,6 +21,9 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
+
+	// Run the Prometeus stats updater in the background
+	prometheusUpdater(db, 24*time.Hour)
 
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		tmpl := template.Must(template.ParseFiles("templates/index.html"))
