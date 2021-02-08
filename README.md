@@ -30,3 +30,5 @@ docker-compose up
 You should now be able to visit http://localhost:8888
 
 You can export data by accessing ``/api/v1/reports``.
+
+Prometheus metrics are accessible through ``/api/v1/metrics`` under the ``teambynumbers_`` prefix and team name as labels.
